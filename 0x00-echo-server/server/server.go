@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"game/common/logger"
 	"game/common/utils"
 	"math/rand"
@@ -10,13 +11,16 @@ import (
 	"time"
 )
 
+var logLevel = flag.String("log", "info", "bench client count")
+
 func handleConnection(c net.Conn) {
-	logger.Infof("Serving %s\n", c.RemoteAddr().String())
+	logger.Debugf("Serving %s\n", c.RemoteAddr().String())
+
 	for {
 		netData, err := bufio.NewReader(c).ReadString('\n')
 		if err != nil {
-			logger.Error(err)
-			return
+			logger.Debug(err)
+			break
 		}
 
 		result := string(netData)
@@ -29,7 +33,8 @@ func handleConnection(c net.Conn) {
 }
 
 func main() {
-	logger.InitLogger()
+	flag.Parse()
+	logger.InitLogger(*logLevel)
 
 	arguments := os.Args
 	if len(arguments) == 1 {

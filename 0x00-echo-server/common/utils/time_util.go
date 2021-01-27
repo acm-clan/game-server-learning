@@ -3,6 +3,9 @@ package utils
 import (
 	"game/common/logger"
 	"time"
+
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 // ProfileFunc record function time
@@ -10,7 +13,11 @@ func ProfileFunc(f func()) {
 	t := NowMicro()
 	f()
 	delta := NowMicro() - t
-	logger.Warnf("[profile] func delta:%v", delta)
+
+	p := message.NewPrinter(language.English)
+	s := p.Sprintf("%v", delta)
+
+	logger.Warnf("[profile] func delta: %v micro second", s)
 }
 
 // Now get current time

@@ -5,8 +5,20 @@ import (
 )
 
 // InitLogger init logger
-func InitLogger() {
-	logrus.SetLevel(logrus.TraceLevel)
+func InitLogger(level string) {
+	switch level {
+	case "info":
+		logrus.SetLevel(logrus.InfoLevel)
+	case "debug":
+		logrus.SetLevel(logrus.DebugLevel)
+	case "error":
+		logrus.SetLevel(logrus.ErrorLevel)
+	case "warn":
+		logrus.SetLevel(logrus.WarnLevel)
+	default:
+		logrus.SetLevel(logrus.InfoLevel)
+	}
+
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp:   true,
 		TimestampFormat: "2006-01-02 15:04:05.000000000",

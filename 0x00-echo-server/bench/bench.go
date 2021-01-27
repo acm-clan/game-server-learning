@@ -11,6 +11,8 @@ import (
 var clientCount = flag.Int("n", 1000, "bench client count")
 var singleClientMessageCount = flag.Int64("m", 1000, "bench client message count")
 var useGoroutine = flag.Bool("go", true, "bench client use goroutine")
+var serverPort = flag.Int("port", 8000, "bench server port")
+var logLevel = flag.String("log", "info", "bench client count")
 
 func run(isGoroutine bool) {
 	logger.Infof("run go %v", isGoroutine)
@@ -23,18 +25,18 @@ func run(isGoroutine bool) {
 		}
 		if isGoroutine {
 			wg.Add(1)
-			go bc.Start()
+			go bc.Start(*serverPort)
 		} else {
 			bc.WaitGroup = nil
-			bc.Start()
+			bc.Start(*serverPort)
 		}
 	}
 	wg.Wait()
 }
 
 func main() {
-	logger.InitLogger()
 	flag.Parse()
+	logger.InitLogger(*logLevel)
 
 	logger.Infof("Start benchmark:%v", *clientCount)
 
