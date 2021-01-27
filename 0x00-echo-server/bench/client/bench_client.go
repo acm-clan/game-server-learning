@@ -15,6 +15,16 @@ type BenchClient struct {
 	ClientID     int64
 	MessageCount int64
 	WaitGroup    *sync.WaitGroup
+	MessageSize  int64
+}
+
+func NewBenchClient(CID int64, wg *sync.WaitGroup, messageCount int64, messageSize int64) *BenchClient {
+	return &BenchClient{
+		ClientID:     CID,
+		MessageCount: messageCount,
+		MessageSize:  messageSize,
+		WaitGroup:    wg,
+	}
 }
 
 func (bc *BenchClient) bench(port int) {
@@ -27,7 +37,7 @@ func (bc *BenchClient) bench(port int) {
 	response := bufio.NewReader(connection)
 
 	for i := 0; i < int(bc.MessageCount); i++ {
-		msg := utils.GenerateString(100)
+		msg := utils.GenerateString(int(bc.MessageSize))
 		logger.Debug("[bench] msg: ", msg)
 		_, err := connection.Write([]byte(msg))
 
