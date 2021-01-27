@@ -13,6 +13,26 @@ import (
 var logLevel = flag.String("log", "info", "log level")
 var serverPort = flag.Int("port", 8000, "server port")
 
+
+func handleConnectionSync(c net.Conn) {
+	logger.Debugf("Serving %s\n", c.RemoteAddr().String())
+
+	for {
+		netData, err := bufio.NewReader(c).ReadString('\n')
+		if err != nil {
+			logger.Debug(err)
+			break
+		}
+
+		result := string(netData)
+
+		logger.Debug(utils.DumpString(result))
+		c.Write([]byte(result))
+	}
+
+	c.Close()
+}
+
 func main() {
 	flag.Parse()
 	logger.InitLogger(*logLevel)
