@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"game/common/logger"
+	"game/common/utils"
 	"game/server/client"
 	"math/rand"
 	"net"
@@ -12,7 +14,7 @@ import (
 
 var logLevel = flag.String("log", "info", "log level")
 var serverPort = flag.Int("port", 8000, "server port")
-
+var useSync = flag.Bool("sync", true, "server use sync")
 
 func handleConnectionSync(c net.Conn) {
 	logger.Debugf("Serving %s\n", c.RemoteAddr().String())
@@ -27,7 +29,11 @@ func handleConnectionSync(c net.Conn) {
 		result := string(netData)
 
 		logger.Debug(utils.DumpString(result))
-		c.Write([]byte(result))
+		_, err = c.Write([]byte(result))
+
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	c.Close()
@@ -48,7 +54,7 @@ func main() {
 	defer listener.Close()
 	rand.Seed(time.Now().Unix())
 
-	logger.Infof("Echo server start accept")
+	logger.Infof("Echo server start accept sync %v", *useSync)
 
 	for {
 		c, err := listener.Accept()
@@ -57,7 +63,12 @@ func main() {
 			return
 		}
 
-		cl := client.NewClient(c)
-		go cl.HandleConnection()
+		if *useSync {
+			go handleConnectionSync(c)
+		} else {
+			cl := client.NewClient(c)
+			go cl.HandleConnection()
+		}
+
 	}
 }
