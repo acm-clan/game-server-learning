@@ -7,27 +7,9 @@ import (
 	"game/common/utils"
 	"net"
 	"os"
-	"sync"
 )
 
-// BenchClient send message to server
-type BenchClient struct {
-	ClientID     int64
-	MessageCount int64
-	WaitGroup    *sync.WaitGroup
-	MessageSize  int64
-}
-
-func NewBenchClient(CID int64, wg *sync.WaitGroup, messageCount int64, messageSize int64) *BenchClient {
-	return &BenchClient{
-		ClientID:     CID,
-		MessageCount: messageCount,
-		MessageSize:  messageSize,
-		WaitGroup:    wg,
-	}
-}
-
-func (bc *BenchClient) bench(ip string, port int) {
+func (bc *BenchClient) benchSync(ip string, port int) {
 	connection, err := net.Dial("tcp", ip+":"+fmt.Sprint(port))
 	if err != nil {
 		logger.Error("ERROR", err)
@@ -63,9 +45,9 @@ func (bc *BenchClient) bench(ip string, port int) {
 }
 
 // Start start a bench client
-func (bc *BenchClient) Start(ip string, port int) {
+func (bc *BenchClient) StartSync(ip string, port int) {
 	logger.Debugf("[client] start %v", bc.ClientID)
-	bc.bench(ip, port)
+	bc.benchSync(ip, port)
 	if bc.WaitGroup != nil {
 		bc.WaitGroup.Done()
 	}
