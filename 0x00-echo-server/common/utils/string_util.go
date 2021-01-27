@@ -1,6 +1,24 @@
 package utils
 
-import "strconv"
+import (
+	"math/rand"
+	"strconv"
+	"time"
+)
+
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+func GenerateString(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
 
 func DumpString(s string) string {
 	val := ""
