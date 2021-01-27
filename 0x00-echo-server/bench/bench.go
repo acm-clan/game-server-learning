@@ -9,7 +9,7 @@ import (
 )
 
 var clientCount = flag.Int("n", 1000, "bench client count")
-var messageCount = flag.Int64("m", 1000, "bench client message count")
+var messageCount = flag.Int64("m", 100, "bench client message count")
 var useGoroutine = flag.Bool("go", true, "bench client use goroutine")
 var serverPort = flag.Int("port", 8000, "bench server port")
 var logLevel = flag.String("log", "info", "bench client count")
