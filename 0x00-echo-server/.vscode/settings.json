@@ -20,7 +20,7 @@
 	"git.autofetch": true,
 	"git.fetchOnPull": true,
 	"git.autorefresh": true,
-	"files.eol":"\n",
+	"files.eol": "\n",
 	"files.encoding": "utf8",
 	"files.autoSave": "afterDelay",
 	"files.autoSaveDelay": 500,
@@ -147,8 +147,6 @@
 			"finishStatusMessage": "${file} compiled"
 		},
 	],
-	"markdown-pdf.convertOnSave": true,
-	"markdown-pdf.outputDirectory": "misc/pdf",
 	"prettier.printWidth": 160, // 超过最大值换行
 	"prettier.tabWidth": 4, // 缩进字节数
 	"prettier.useTabs": false, // 缩进不使用tab，使用空格

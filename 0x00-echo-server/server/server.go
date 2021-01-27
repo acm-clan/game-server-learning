@@ -3,15 +3,16 @@ package main
 import (
 	"bufio"
 	"flag"
+	"fmt"
 	"game/common/logger"
 	"game/common/utils"
 	"math/rand"
 	"net"
-	"os"
 	"time"
 )
 
-var logLevel = flag.String("log", "info", "bench client count")
+var logLevel = flag.String("log", "info", "log level")
+var serverPort = flag.Int("port", 8000, "server port")
 
 func handleConnection(c net.Conn) {
 	logger.Debugf("Serving %s\n", c.RemoteAddr().String())
@@ -36,13 +37,7 @@ func main() {
 	flag.Parse()
 	logger.InitLogger(*logLevel)
 
-	arguments := os.Args
-	if len(arguments) == 1 {
-		logger.Error("Please provide a port number!")
-		return
-	}
-
-	port := ":" + arguments[1]
+	port := ":" + fmt.Sprint(*serverPort)
 	listener, err := net.Listen("tcp4", port)
 
 	if err != nil {

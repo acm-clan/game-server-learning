@@ -27,8 +27,8 @@ func NewBenchClient(CID int64, wg *sync.WaitGroup, messageCount int64, messageSi
 	}
 }
 
-func (bc *BenchClient) bench(port int) {
-	connection, err := net.Dial("tcp", ":"+fmt.Sprint(port))
+func (bc *BenchClient) bench(ip string, port int) {
+	connection, err := net.Dial("tcp", ip+":"+fmt.Sprint(port))
 	if err != nil {
 		logger.Error("ERROR", err)
 		os.Exit(1)
@@ -63,9 +63,9 @@ func (bc *BenchClient) bench(port int) {
 }
 
 // Start start a bench client
-func (bc *BenchClient) Start(port int) {
-	logger.Infof("[client] start %v", bc.ClientID)
-	bc.bench(port)
+func (bc *BenchClient) Start(ip string, port int) {
+	logger.Debugf("[client] start %v", bc.ClientID)
+	bc.bench(ip, port)
 	if bc.WaitGroup != nil {
 		bc.WaitGroup.Done()
 	}
