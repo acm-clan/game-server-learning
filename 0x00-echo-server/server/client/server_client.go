@@ -7,6 +7,10 @@ import (
 	"net"
 )
 
+const (
+	writeBacklog = 16
+)
+
 type Message struct {
 	data string
 }
@@ -20,7 +24,7 @@ type Client struct {
 func NewClient(c net.Conn) *Client {
 	return &Client{
 		Connection: c,
-		chWrite:    make(chan *Message),
+		chWrite:    make(chan *Message, writeBacklog),
 		chClose:    make(chan struct{}),
 	}
 }
