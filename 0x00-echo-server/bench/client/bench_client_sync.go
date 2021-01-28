@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"game/common/logger"
+	"game/common/utils"
 	"net"
 )
 
@@ -18,19 +19,19 @@ func (bc *BenchClient) benchSync(ip string, port int) {
 
 	response := bufio.NewReader(connection)
 
-	for {
-		msg, err := response.ReadBytes(byte('\n'))
+	for i := 0; i < int(bc.MessageCount); i++ {
+		msg := utils.GenerateString(int(bc.MessageSize)) + "\n"
+		logger.Debug("[bench] msg: ", msg)
 
-		bc.MessageReadCount++
-
-		logger.Debugf("[echo] %v %v ", bc.MessageReadCount, string(msg))
-
-		if err != nil || bc.MessageReadCount == bc.MessageCount {
-			close(bc.chClose)
-			break
+		_, err := bc.Connection.Write([]byte(msg))
+		if err != nil {
+			panic(err)
 		}
 
-		_, err = bc.Connection.Write(msg)
+		ret, err := response.ReadBytes(byte('\n'))
+
+		logger.Debugf("[echo] %v %v ", i+1, string(ret))
+
 		if err != nil {
 			panic(err)
 		}
