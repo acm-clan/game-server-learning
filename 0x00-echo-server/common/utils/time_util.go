@@ -9,7 +9,7 @@ import (
 )
 
 // ProfileFunc record function time
-func ProfileFunc(f func()) {
+func ProfileFunc(f func()) int64 {
 	t := NowMicro()
 	f()
 	delta := NowMicro() - t
@@ -18,6 +18,7 @@ func ProfileFunc(f func()) {
 	s := p.Sprintf("%v", delta)
 
 	logger.Warnf("[profile] func delta: %v micro second", s)
+	return int64(delta)
 }
 
 // Now get current time

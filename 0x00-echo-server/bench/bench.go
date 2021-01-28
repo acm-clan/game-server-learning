@@ -41,7 +41,11 @@ func main() {
 
 	logger.Infof("Start benchmark: client %v message %v size %v sync %v", *clientCount, *messageCount, *messageSize, *useSync)
 
-	utils.ProfileFunc(func() {
+	delta := utils.ProfileFunc(func() {
 		run(*useGoroutine)
 	})
+
+	seconds := float64(delta) / 1000000.0
+	packetCount := int64(float64(*messageCount) * float64(*clientCount) / seconds)
+	logger.Infof("Second packet count %v data size %v KB", packetCount, packetCount*(*messageSize)/1024)
 }
