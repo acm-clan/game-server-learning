@@ -1,100 +1,38 @@
 package main
 
 import (
-	"bufio"
-	"flag"
-	"fmt"
-	"game/common/logger"
-	"game/server/client"
-	"io"
-	"math/rand"
-	"net"
-	"net/http"
-	_ "net/http/pprof"
-	"time"
+    "flag"
+    "fmt"
+    "log"
+
+    "github.com/panjf2000/gnet"
 )
 
-var logLevel = flag.String("log", "info", "log level")
-var serverPort = flag.Int("port", 8000, "server port")
-var useSync = flag.Bool("sync", true, "server use sync")
-var echoBack = flag.Bool("echo", true, "server echo")
-
-func handleConnectionSync(c net.Conn) {
-	logger.Debugf("Serving %s\n", c.RemoteAddr().String())
-
-	msgCount := 0
-	r := bufio.NewReader(c)
-
-	for {
-		msg, err := r.ReadString('\n')
-		if err == io.EOF {
-			logger.Debugf("client closed: %v", err)
-			break
-		}
-
-		if err != nil {
-			logger.Errorf("read error: %v", err)
-			break
-		}
-
-		msgCount++
-
-		logger.Debugf("[server] %v recv: %v", msgCount, msg)
-
-		if *echoBack {
-			_, err = c.Write([]byte(msg))
-
-			if err != nil {
-				logger.Errorf("write error: %v", err)
-				break
-			}
-		}
-	}
-
-	c.Close()
+type echoServer struct {
+    *gnet.EventServer
 }
 
-func serviceProfile() {
-	logger.Info("Start profile 8001")
-	http.ListenAndServe("0.0.0.0:8001", nil)
-
+func (es *echoServer) OnInitComplete(srv gnet.Server) (action gnet.Action) {
+    log.Printf("Echo server is listening on %s (multi-cores: %t, loops: %d)\n",
+        srv.Addr.String(), srv.Multicore, srv.NumEventLoop)
+    return
 }
 
-func startProfile() {
-	go serviceProfile()
+func (es *echoServer) React(frame []byte, c gnet.Conn) (out []byte, action gnet.Action) {
+    // Echo synchronously.
+    out = frame
+    return
 }
 
 func main() {
-	flag.Parse()
-	logger.InitLogger(*logLevel)
-	startProfile()
+    var port int
+    var multicore, reuseport bool
 
-	port := ":" + fmt.Sprint(*serverPort)
-	listener, err := net.Listen("tcp4", port)
-
-	if err != nil {
-		logger.Error(err)
-		return
-	}
-
-	defer listener.Close()
-	rand.Seed(time.Now().Unix())
-
-	logger.Infof("Echo server start accept sync %v", *useSync)
-
-	for {
-		c, err := listener.Accept()
-		if err != nil {
-			logger.Error(err)
-			return
-		}
-
-		if *useSync {
-			go handleConnectionSync(c)
-		} else {
-			cl := client.NewClient(c)
-			go cl.HandleConnection()
-		}
-
-	}
+    // Example command: go run echo.go --port 8000 --multicore=true --reuseport=true
+    flag.IntVar(&port, "port", 8000, "--port 8000")
+    flag.BoolVar(&multicore, "multicore", true, "--multicore true")
+    flag.BoolVar(&reuseport, "reuseport", false, "--reuseport true")
+    flag.Parse()
+    echo := new(echoServer)
+    log.Fatal(gnet.Serve(echo, fmt.Sprintf("tcp://:%d", port), gnet.WithMulticore(multicore), gnet.WithReusePort(reuseport)))
 }

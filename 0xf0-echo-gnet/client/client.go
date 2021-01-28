@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	logger.InitLogger()
+	logger.InitLogger("debug")
 
 	arguments := os.Args
 	if len(arguments) == 1 {
