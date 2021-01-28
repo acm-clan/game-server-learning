@@ -17,6 +17,7 @@ import (
 var logLevel = flag.String("log", "info", "log level")
 var serverPort = flag.Int("port", 8000, "server port")
 var useSync = flag.Bool("sync", true, "server use sync")
+var echoBack = flag.Bool("echo", true, "server echo")
 
 func handleConnectionSync(c net.Conn) {
 	logger.Debugf("Serving %s\n", c.RemoteAddr().String())
@@ -40,11 +41,13 @@ func handleConnectionSync(c net.Conn) {
 
 		logger.Debugf("[server] %v recv: %v", msgCount, msg)
 
-		_, err = c.Write([]byte(msg))
+		if *echoBack {
+			_, err = c.Write([]byte(msg))
 
-		if err != nil {
-			logger.Errorf("write error: %v", err)
-			break
+			if err != nil {
+				logger.Errorf("write error: %v", err)
+				break
+			}
 		}
 	}
 
