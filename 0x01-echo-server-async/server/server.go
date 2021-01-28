@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"game/common/logger"
 	"game/server/client"
+	"io"
 	"math/rand"
 	"net"
 	"net/http"
@@ -20,19 +21,30 @@ var useSync = flag.Bool("sync", true, "server use sync")
 func handleConnectionSync(c net.Conn) {
 	logger.Debugf("Serving %s\n", c.RemoteAddr().String())
 
+	msgCount := 0
+	r := bufio.NewReader(c)
+
 	for {
-		netData, err := bufio.NewReader(c).ReadString('\n')
-		if err != nil {
-			logger.Debug(err)
+		msg, err := r.ReadString('\n')
+		if err == io.EOF {
+			logger.Debugf("client closed: %v", err)
 			break
 		}
 
-		result := string(netData)
+		if err != nil {
+			logger.Errorf("read error: %v", err)
+			break
+		}
 
-		_, err = c.Write([]byte(result))
+		msgCount++
+
+		logger.Debugf("[server] %v recv: %v", msgCount, msg)
+
+		_, err = c.Write([]byte(msg))
 
 		if err != nil {
-			panic(err)
+			logger.Errorf("write error: %v", err)
+			break
 		}
 	}
 

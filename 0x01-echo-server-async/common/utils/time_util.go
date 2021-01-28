@@ -17,7 +17,7 @@ func ProfileFunc(f func()) int64 {
 	p := message.NewPrinter(language.English)
 	s := p.Sprintf("%v", delta)
 
-	logger.Warnf("[profile] func delta: %v micro second", s)
+	logger.Infof("[profile] func delta: %v micro second", s)
 	return int64(delta)
 }
 

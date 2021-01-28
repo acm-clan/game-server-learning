@@ -21,7 +21,6 @@ type BenchClient struct {
 	MessageReadCount  int64
 	WaitGroup         *sync.WaitGroup
 	MessageSize       int64
-	chWrite           chan *Message
 	chClose           chan struct{}
 	Connection        net.Conn
 	Sync              bool
@@ -35,48 +34,29 @@ func NewBenchClient(CID int64, wg *sync.WaitGroup, messageCount int64, messageSi
 		MessageWriteCount: 0,
 		MessageSize:       messageSize,
 		WaitGroup:         wg,
-		chWrite:           make(chan *Message),
 		chClose:           make(chan struct{}),
 		Sync:              true,
 	}
 }
 
-func (bc *BenchClient) WriteRandom() {
-	if bc.MessageWriteCount == bc.MessageCount {
-		return
-	}
-
-	msg := utils.GenerateString(int(bc.MessageSize)) + "\n"
-	logger.Debug("[bench] msg: ", msg)
-
-	m := &Message{
-		data: msg,
-	}
-
-	bc.chWrite <- m
-
-	bc.MessageWriteCount++
-}
-
 func (bc *BenchClient) BeginWrite() {
-	defer func() {
-		close(bc.chWrite)
-		bc.Connection.Close()
-	}()
+	for i := 0; i < int(bc.MessageCount); i++ {
+		msg := utils.GenerateString(int(bc.MessageSize)) + "\n"
+		size, err := bc.Connection.Write([]byte(msg))
 
-	for bc.chClose != nil {
-		select {
-		case data := <-bc.chWrite:
-			_, err := bc.Connection.Write([]byte(data.data))
-			if err != nil {
-				panic(err)
-			}
+		logger.Debugf("[bench] %v write:%v %v", i+1, utils.DumpString(msg), size)
+
+		if err != nil {
+			logger.Infof("write error: %v", err)
 			break
-		case <-bc.chClose:
-			bc.chClose = nil
+		}
+
+		if size != int(bc.MessageSize+1) {
+			logger.Infof("write size error %v", size)
 			break
 		}
 	}
+
 	logger.Debug("bench client write exit normally")
 }
 
@@ -91,8 +71,6 @@ func (bc *BenchClient) benchAsync(ip string, port int) {
 
 	go bc.BeginWrite()
 
-	bc.WriteRandom()
-
 	response := bufio.NewReader(connection)
 
 	for {
@@ -102,14 +80,19 @@ func (bc *BenchClient) benchAsync(ip string, port int) {
 
 		logger.Debugf("[echo] %v %v ", bc.MessageReadCount, string(msg))
 
-		if err != nil || bc.MessageReadCount == bc.MessageCount {
+		if err != nil {
+			logger.Errorf("read error: %v", err)
 			close(bc.chClose)
 			break
 		}
 
-		bc.WriteRandom()
+		if bc.MessageReadCount == bc.MessageCount {
+			break
+		}
 	}
 
+	logger.Debugf("[bench] read finished")
+	bc.Connection.Close()
 }
 
 // Start start a bench client

@@ -15,7 +15,7 @@ var serverPort = flag.Int("port", 8000, "bench server port")
 var logLevel = flag.String("log", "info", "bench client count")
 var messageSize = flag.Int64("s", 100, "bench client message size")
 var host = flag.String("host", "127.0.0.1", "bench server host")
-var useSync = flag.Bool("sync", true, "bench client use sync")
+var useSync = flag.Bool("sync", false, "bench client use sync")
 
 func run(isGoroutine bool) {
 	logger.Infof("Run goroutine %v", isGoroutine)
