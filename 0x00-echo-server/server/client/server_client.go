@@ -3,7 +3,6 @@ package client
 import (
 	"bufio"
 	"game/common/logger"
-	"game/common/utils"
 	"net"
 )
 
@@ -69,7 +68,6 @@ func (c *Client) HandleConnection() {
 		}
 
 		result := string(netData)
-		logger.Debug(utils.DumpString(result))
 
 		m := &Message{
 			data: result,

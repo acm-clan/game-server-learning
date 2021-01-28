@@ -39,7 +39,7 @@ func main() {
 	flag.Parse()
 	logger.InitLogger(*logLevel)
 
-	logger.Infof("Start benchmark: client %v message %v size %v", *clientCount, *messageCount, *messageSize)
+	logger.Infof("Start benchmark: client %v message %v size %v sync %v", *clientCount, *messageCount, *messageSize, *useSync)
 
 	utils.ProfileFunc(func() {
 		run(*useGoroutine)

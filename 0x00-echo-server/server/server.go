@@ -5,10 +5,11 @@ import (
 	"flag"
 	"fmt"
 	"game/common/logger"
-	"game/common/utils"
 	"game/server/client"
 	"math/rand"
 	"net"
+	"net/http"
+	_ "net/http/pprof"
 	"time"
 )
 
@@ -28,7 +29,6 @@ func handleConnectionSync(c net.Conn) {
 
 		result := string(netData)
 
-		logger.Debug(utils.DumpString(result))
 		_, err = c.Write([]byte(result))
 
 		if err != nil {
@@ -39,9 +39,20 @@ func handleConnectionSync(c net.Conn) {
 	c.Close()
 }
 
+func serviceProfile() {
+	logger.Info("Start profile 8001")
+	http.ListenAndServe("0.0.0.0:8001", nil)
+
+}
+
+func startProfile() {
+	go serviceProfile()
+}
+
 func main() {
 	flag.Parse()
 	logger.InitLogger(*logLevel)
+	startProfile()
 
 	port := ":" + fmt.Sprint(*serverPort)
 	listener, err := net.Listen("tcp4", port)

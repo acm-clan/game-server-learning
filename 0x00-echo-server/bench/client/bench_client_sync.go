@@ -16,10 +16,6 @@ func (bc *BenchClient) benchSync(ip string, port int) {
 
 	bc.Connection = connection
 
-	go bc.BeginWrite()
-
-	bc.WriteRandom()
-
 	response := bufio.NewReader(connection)
 
 	for {
@@ -34,7 +30,10 @@ func (bc *BenchClient) benchSync(ip string, port int) {
 			break
 		}
 
-		bc.WriteRandom()
+		_, err = bc.Connection.Write(msg)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 }
