@@ -1,0 +1,168 @@
+{
+	"[proto3]": {
+		"editor.defaultFormatter": "xaver.clang-format",
+	},
+	"[html]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[css]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[less]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"editor.defaultFormatter": null,
+	"extensions.ignoreRecommendations": false,
+	"git.autofetchPeriod": 60,
+	"git.autofetch": true,
+	"git.fetchOnPull": true,
+	"git.autorefresh": true,
+	"files.eol": "\n",
+	"files.encoding": "utf8",
+	"files.autoSave": "afterDelay",
+	"files.autoSaveDelay": 500,
+	"editor.tabSize": 4,
+	"editor.formatOnType": true,
+	"editor.formatOnSaveMode": "file",
+	"editor.formatOnPaste": true,
+	"editor.formatOnSave": true,
+	"editor.parameterHints.enabled": true,
+	"editor.tabCompletion": "on",
+	"editor.insertSpaces": false,
+	"go.testTimeout": "300s",
+	"go.docsTool": "gogetdoc",
+	"go.formatTool": "gofumpt",
+	"go.formatFlags": [],
+	"go.lintTool": "golangci-lint",
+	"go.lintOnSave": "package",
+	"go.lintFlags": [
+		"--fast",
+		"--fix"
+	],
+	"go.vetOnSave": "package",
+	"go.vetFlags": [
+		"-all"
+	],
+	"go.enableCodeLens": {
+		"references": false,
+		"runtest": true
+	},
+	"go.buildOnSave": "package",
+	"go.gotoSymbol.ignoreFolders": [],
+	"go.inferGopath": false,
+	"go.gotoSymbol.includeGoroot": true,
+	"go.gotoSymbol.includeImports": true,
+	"go.installDependenciesWhenBuilding": true,
+	"go.useLanguageServer": true,
+	"go.languageServerFlags": [
+		"-rpc.trace",
+		"serve",
+		"--debug=localhost:6060",
+	],
+	"go.languageServerExperimentalFeatures": {
+		"diagnostics": true,
+	},
+	"go.autocompleteUnimportedPackages": true,
+	"go.coverOnTestPackage": true,
+	"go.liveErrors": {
+		"enabled": false,
+		"delay": 500
+	},
+	"go.useCodeSnippetsOnFunctionSuggest": true,
+	"go.useCodeSnippetsOnFunctionSuggestWithoutType": true,
+	"go.toolsManagement.checkForUpdates": "proxy",
+	"clang-format.style": "google",
+	"clang-format.executable": "${workspaceRoot}\\misc\\clang-format.exe",
+	"clang-format.language.proto.enable": true,
+	"clang-format.language.proto.style": "",
+	"clang-format.language.proto.fallbackStyle": "",
+	"search.exclude": {
+		"vendor/*": true,
+		"misc/docs/*": true,
+		"**/*.bytes": true,
+		"**/*.lua": true,
+		"**/Client_Config": true,
+	},
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/*.meta": true,
+		"**/*.bytes": true,
+		"**/*.lua": true,
+		"external/excel": true,
+		"external/install-protoc": true,
+		"external/*.sh": true,
+		"external/*.bat": true,
+		"external/*.exe": true,
+		"**/Client_Config": true,
+	},
+	"runOnSave.statusMessageTimeout": 3000,
+	"runOnSave.commands": [
+		{
+			"match": ".yaml",
+			"command": "Pushd ${workspaceFolder} && go-bindata -pkg resource -o=internal/exported/resource/resource.go config/...",
+			"runIn": "backend",
+			"runningStatusMessage": "Compiling ${file}",
+			"finishStatusMessage": "${file} compiled"
+		},
+		{
+			"match": "external\\\\proto\\\\cli\\\\.*",
+			"command": "protoc --proto_path=${workspaceFolder} --go_out=${workspaceFolder}/../ ${file} && protoc-go-inject-tag -input=${workspaceFolder}/internal/exported/pb/cli/${fileBasenameNoExtension}.pb.go",
+			"runIn": "backend",
+			"runningStatusMessage": "Compiling ${file}",
+			"finishStatusMessage": "${file} compiled"
+		},
+		{
+			"match": "external\\\\proto\\\\rpc\\\\.*",
+			"command": "protoc --proto_path=${workspaceFolder} --go_out=${workspaceFolder}/../ ${file} && protoc-go-inject-tag -input=${workspaceFolder}/internal/exported/pb/rpc/${fileBasenameNoExtension}.pb.go",
+			"runIn": "backend",
+			"runningStatusMessage": "Compiling ${file}",
+			"finishStatusMessage": "${file} compiled"
+		},
+		{
+			"match": "dictionary\\.go$",
+			"command": "Pushd ${workspaceFolder} && go run ./tools luadict",
+			"runIn": "backend",
+			"runningStatusMessage": "Compiling ${file}",
+			"finishStatusMessage": "${file} compiled"
+		},
+		{
+			"match": "errors\\.go$",
+			"command": "Pushd ${workspaceFolder} && go run ./tools luaerr",
+			"runIn": "backend",
+			"runningStatusMessage": "Compiling ${file}",
+			"finishStatusMessage": "${file} compiled"
+		},
+		{
+			"match": "reasons\\.go$",
+			"command": "Pushd ${workspaceFolder} && go run ./tools luareasons",
+			"runIn": "backend",
+			"runningStatusMessage": "Compiling ${file}",
+			"finishStatusMessage": "${file} compiled"
+		},
+	],
+	"prettier.printWidth": 160, // 超过最大值换行
+	"prettier.tabWidth": 4, // 缩进字节数
+	"prettier.useTabs": false, // 缩进不使用tab，使用空格
+	"prettier.semi": true, // 句尾添加分号
+	"prettier.singleQuote": true, // 使用单引号代替双引号
+	"prettier.proseWrap": "preserve", // 默认值。因为使用了一些折行敏感型的渲染器（如GitHub comment）而按照markdown文本样式进行折行
+	"prettier.arrowParens": "avoid", //  (x) => {} 箭头函数参数只有一个时是否要有小括号。avoid：省略括号
+	"prettier.bracketSpacing": true, // 在对象，数组括号与文字之间加空格 "{ foo: bar }"
+	"prettier.disableLanguages": [
+		"vue"
+	], // 不格式化vue文件，vue文件的格式化单独设置
+	"prettier.endOfLine": "auto", // 结尾是 \n \r \n\r auto
+	"prettier.htmlWhitespaceSensitivity": "ignore",
+	"prettier.ignorePath": ".prettierignore", // 不使用prettier格式化的文件填写在项目的.prettierignore文件中
+	"prettier.jsxBracketSameLine": false, // 在jsx中把'>' 是否单独放一行
+	"prettier.jsxSingleQuote": false, // 在jsx中使用单引号代替双引号
+	"prettier.requireConfig": false, // Require a 'prettierconfig' to format prettier
+	"prettier.trailingComma": "es5", // 在对象或数组最后一个元素后面是否加逗号（在ES5中加尾逗号）
+}
