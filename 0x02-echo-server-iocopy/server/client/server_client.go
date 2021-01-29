@@ -59,8 +59,9 @@ func (c *Client) HandleConnection() {
 
 	go c.BeginWrite()
 
+	r := bufio.NewReader(c.Connection)
 	for {
-		netData, err := bufio.NewReader(c.Connection).ReadString('\n')
+		netData, err := r.ReadString('\n')
 		if err != nil {
 			logger.Debug("begin close client:", err)
 			close(c.chClose)
