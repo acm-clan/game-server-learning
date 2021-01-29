@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"game/common/logger"
 	"game/common/utils"
+	"io"
 	"net"
+	"os"
 	"sync"
 )
 
@@ -39,22 +41,56 @@ func NewBenchClient(CID int64, wg *sync.WaitGroup, messageCount int64, messageSi
 	}
 }
 
-func (bc *BenchClient) BeginWrite() {
+func (bc *BenchClient) Write0() {
+	fileName := fmt.Sprintf("files/bench.txt")
+
+	var f *os.File
+	var err error
+
+	f, err = os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		logger.Error("file open fail", err)
+		return
+	}
+
+	t := 0
 	for i := 0; i < int(bc.MessageCount); i++ {
 		msg := utils.GenerateString(int(bc.MessageSize)) + "\n"
-		size, err := bc.Connection.Write([]byte(msg))
-
-		logger.Debugf("[bench] %v write:%v %v", i+1, utils.DumpString(msg), size)
-
+		n, err := io.WriteString(f, msg)
 		if err != nil {
-			logger.Infof("write error: %v", err)
-			break
+			logger.Error("write error", err)
+			return
 		}
+		t += n
+	}
 
-		if size != int(bc.MessageSize+1) {
-			logger.Infof("write size error %v", size)
-			break
-		}
+	logger.Infof("write file %v size %v KB", fileName, t/1024)
+}
+
+func (bc *BenchClient) GetReader() io.Reader {
+	fileName := fmt.Sprintf("files/bench.txt")
+
+	var f *os.File
+	var err error
+
+	f, err = os.OpenFile(fileName, os.O_RDONLY, 0666)
+	if err != nil {
+		logger.Error("read file open fail", err)
+		return nil
+	}
+	r := bufio.NewReader(f)
+	return r
+}
+
+func (bc *BenchClient) BeginWrite() {
+	//bc.Write0()
+	r := bc.GetReader()
+	w := bufio.NewWriter(bc.Connection)
+	buf := make([]byte, 4096)
+	_, err := io.CopyBuffer(w, r, buf)
+
+	if err != nil {
+		logger.Error("write error: ", err)
 	}
 
 	logger.Debug("bench client write exit normally")

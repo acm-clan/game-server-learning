@@ -80,7 +80,7 @@ func main() {
 	defer listener.Close()
 	rand.Seed(time.Now().Unix())
 
-	logger.Infof("Echo server start accept sync %v", *useSync)
+	logger.Infof("Echo server start accept sync %v port %v", *useSync, *serverPort)
 
 	for {
 		c, err := listener.Accept()

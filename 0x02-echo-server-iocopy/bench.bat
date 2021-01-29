@@ -1,1 +1,2 @@
-go run ./bench -m 10000 -n 4000 -host 172.24.185.253 -port 8000
+go run ./bench -n 3000 -log info -m 10000 -host 172.24.185.253
+
