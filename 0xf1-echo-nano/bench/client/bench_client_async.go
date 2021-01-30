@@ -161,7 +161,7 @@ func (bc *BenchClient) Start(ip string, port int) {
 		logger.Info("connect server")
 	})
 
-	if err := c.Start("127.0.0.1:8000"); err != nil {
+	if err := c.Start(ip + ":8000"); err != nil {
 		panic(err)
 	}
 
