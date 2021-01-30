@@ -165,7 +165,9 @@ func (bc *BenchClient) Start(ip string, port int) {
 		panic(err)
 	}
 
-	c.On("pong", func(data interface{}) {})
+	c.On("pong", func(data interface{}) {
+		logger.Info("recv pong")
+	})
 
 	<-chReady
 	for c.chSend != nil {
