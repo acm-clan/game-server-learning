@@ -1,5 +1,5 @@
 syntax = "proto3";
-package testdata;
+package pb;
 
 message Ping {
     string Content = 1;
@@ -8,3 +8,4 @@ message Ping {
 message Pong {
     string Content = 2;
 }
+

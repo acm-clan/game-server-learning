@@ -168,9 +168,13 @@ func (bc *BenchClient) Start(ip string, port int) {
 	c.On("pong", func(data interface{}) {})
 
 	<-chReady
-	for {
+	for c.chSend != nil {
 		logger.Info("send notify")
 		c.Notify("TestHandler.Ping", &pb.Ping{})
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
+	}
+
+	if bc.WaitGroup != nil {
+		bc.WaitGroup.Done()
 	}
 }

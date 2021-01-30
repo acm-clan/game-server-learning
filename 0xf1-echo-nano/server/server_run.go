@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"game/common/logger"
+	"game/pb"
 	"sync/atomic"
 	"time"
 
 	"github.com/lonng/nano"
-	"github.com/lonng/nano/benchmark/testdata"
 	"github.com/lonng/nano/component"
 	"github.com/lonng/nano/serialize/protobuf"
 	"github.com/lonng/nano/session"
@@ -24,20 +25,24 @@ type TestHandler struct {
 }
 
 func (h *TestHandler) AfterInit() {
-	ticker := time.NewTicker(time.Second)
+	ticker := time.NewTicker(time.Second * 1)
 
 	// metrics output ticker
 	go func() {
 		for range ticker.C {
-			println("QPS", atomic.LoadInt32(&h.metrics))
-			atomic.StoreInt32(&h.metrics, 0)
+			v := atomic.LoadInt32(&h.metrics)
+			if v > 0 {
+				println("QPS", v)
+				atomic.StoreInt32(&h.metrics, 0)
+			}
 		}
 	}()
 }
 
-func (h *TestHandler) Ping(s *session.Session, data *testdata.Ping) error {
+func (h *TestHandler) Ping(s *session.Session, data *pb.Ping) error {
+	logger.Info("recv ping")
 	atomic.AddInt32(&h.metrics, 1)
-	return s.Push("pong", &testdata.Pong{Content: data.Content})
+	return s.Push("pong", &pb.Pong{Content: data.Content})
 }
 
 func runServer(port int) {

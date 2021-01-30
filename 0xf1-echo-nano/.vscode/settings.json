@@ -112,8 +112,8 @@
 			"finishStatusMessage": "${file} compiled"
 		},
 		{
-			"match": "external\\\\proto\\\\cli\\\\.*",
-			"command": "protoc --proto_path=${workspaceFolder} --go_out=${workspaceFolder}/../ ${file} && protoc-go-inject-tag -input=${workspaceFolder}/internal/exported/pb/cli/${fileBasenameNoExtension}.pb.go",
+			"match": "pb\\\\.*",
+			"command": "protoc --go_out=${workspaceFolder}/pb ${file}",
 			"runIn": "backend",
 			"runningStatusMessage": "Compiling ${file}",
 			"finishStatusMessage": "${file} compiled"

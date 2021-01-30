@@ -217,6 +217,7 @@ func (c *Connector) write() {
 	defer func() {
 		logger.Info("close chSend")
 		close(c.chSend)
+		c.chSend = nil
 	}()
 
 	for {
@@ -235,7 +236,9 @@ func (c *Connector) write() {
 }
 
 func (c *Connector) send(data []byte) {
-	c.chSend <- data
+	if c.chSend != nil {
+		c.chSend <- data
+	}
 }
 
 func (c *Connector) read() {
