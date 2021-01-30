@@ -113,7 +113,7 @@
 		},
 		{
 			"match": "pb\\\\.*",
-			"command": "protoc --go_out=${workspaceFolder}/pb ${file}",
+			"command": "protoc --proto_path=${workspaceFolder}/pb --go_out=${workspaceFolder}/pb ${file}",
 			"runIn": "backend",
 			"runningStatusMessage": "Compiling ${file}",
 			"finishStatusMessage": "${file} compiled"
