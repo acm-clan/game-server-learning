@@ -143,22 +143,12 @@ func (bc *BenchClient) StartAsync(ip string, port int) {
 }
 
 // Start start a bench client
-func (bc *BenchClient) Start2(ip string, port int) {
-	if bc.Sync {
-		bc.StartSync(ip, port)
-	} else {
-		bc.StartAsync(ip, port)
-	}
-}
-
-// Start start a bench client
 func (bc *BenchClient) Start(ip string, port int) {
 	c := NewConnector()
 
 	chReady := make(chan struct{})
 	c.OnConnected(func() {
 		chReady <- struct{}{}
-		logger.Info("connect server")
 	})
 
 	if err := c.Start(ip + ":8000"); err != nil {
@@ -166,13 +156,22 @@ func (bc *BenchClient) Start(ip string, port int) {
 	}
 
 	c.On("pong", func(data interface{}) {
-		logger.Info("recv pong")
+		// logger.Info("recv pong")
 	})
 
 	<-chReady
 	for c.chSend != nil {
-		logger.Info("send notify")
-		c.Notify("TestHandler.Ping", &pb.Ping{})
+		// logger.Info("send notify")
+		str := "kTCfHJWsqbwndyENcgJAXRvqwdAXIIHgNxjYjHyvwmhRROUlkrgjPXgBamvvHYipQLMkKcMGXwzsKQJEBKnEKVmeyzwOMZrkYjCb"
+
+		err := c.Notify("TestHandler.Ping", &pb.Ping{
+			Content: str,
+		})
+
+		if err != nil {
+			panic(err)
+		}
+
 		time.Sleep(100 * time.Millisecond)
 	}
 
