@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"game/common/logger"
 	"game/pb"
 	"sync/atomic"
 	"time"
@@ -23,6 +24,8 @@ type TestHandler struct {
 	metrics int32
 }
 
+var totalDataSize = 0
+
 func (h *TestHandler) AfterInit() {
 	seconds := int32(2)
 	ticker := time.NewTicker(time.Second * time.Duration(seconds))
@@ -32,8 +35,9 @@ func (h *TestHandler) AfterInit() {
 		for range ticker.C {
 			v := atomic.LoadInt32(&h.metrics)
 			if v > 0 {
-				println("QPS", v/seconds)
+				logger.Infof("QPS %v data %v KB", v/seconds, totalDataSize/1024)
 				atomic.StoreInt32(&h.metrics, 0)
+				totalDataSize = 0
 			}
 		}
 	}()
@@ -42,6 +46,7 @@ func (h *TestHandler) AfterInit() {
 func (h *TestHandler) Ping(s *session.Session, data *pb.Ping) error {
 	// logger.Info("recv ping")
 	atomic.AddInt32(&h.metrics, 1)
+	totalDataSize += len(data.Content)
 	return s.Push("pong", &pb.Pong{Content: data.Content})
 }
 
