@@ -10,7 +10,6 @@ import (
 	"net"
 	"os"
 	"sync"
-	"time"
 )
 
 type Message struct {
@@ -161,8 +160,7 @@ func (bc *BenchClient) Start(ip string, port int) {
 
 	<-chReady
 	for c.chSend != nil {
-		// logger.Info("send notify")
-		str := "kTCfHJWsqbwndyENcgJAXRvqwdAXIIHgNxjYjHyvwmhRROUlkrgjPXgBamvvHYipQLMkKcMGXwzsKQJEBKnEKVmeyzwOMZrkYjCb"
+		str := "kTCfHJWsqbwndyENcgJAXRvqwdAXIIHgNxjYjHyvwmhRROUlkrgjPXgBamvvHYipQLMkKcMGXwzsKQJEBKnEKVmeyzwOMZrkYjCbkTCfHJWsqbwndyENcgJAXRvqwdAXIIHgNxjYjHyvwmhRROUlkrgjPXgBamvvHYipQLMkKcMGXwzsKQJEBKnEKVmeyzwOMZrkYjCb"
 
 		err := c.Notify("TestHandler.Ping", &pb.Ping{
 			Content: str,
@@ -172,7 +170,6 @@ func (bc *BenchClient) Start(ip string, port int) {
 			panic(err)
 		}
 
-		time.Sleep(1 * time.Millisecond)
 	}
 
 	if bc.WaitGroup != nil {

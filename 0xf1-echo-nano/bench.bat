@@ -1,2 +1,3 @@
-go run ./bench -n 380
+go run ./bench -n 10
+pause
 

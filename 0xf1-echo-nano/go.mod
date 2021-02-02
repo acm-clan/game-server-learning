@@ -12,4 +12,4 @@ require (
 )
 
 //replace github.com/lonng/nano => github.com/acm-clan/nano v0.5.1
-replace github.com/lonng/nano => ../../nano-dansen
+replace github.com/lonng/nano => ../../nano-raw
