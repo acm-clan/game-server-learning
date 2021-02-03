@@ -34,5 +34,7 @@ func main() {
     flag.BoolVar(&reuseport, "reuseport", false, "--reuseport true")
     flag.Parse()
     echo := new(echoServer)
-    log.Fatal(gnet.Serve(echo, fmt.Sprintf("tcp://:%d", port), gnet.WithMulticore(multicore), gnet.WithReusePort(reuseport)))
+
+    err := gnet.Serve(echo, fmt.Sprintf("tcp://:%d", port), gnet.WithMulticore(multicore), gnet.WithReusePort(reuseport))
+    log.Fatal(err)
 }
